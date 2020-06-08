@@ -1,0 +1,19 @@
+{
+  "author": "Richard PAYET",
+  "name": "webpack-ts",
+  "description": "",
+  "version": "1.0.0",
+  "scripts": {
+    "myBuild": "webpack --progress --profile --watch"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "ts-loader": "^7.0.5",
+    "typescript": "^3.9.5",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  },
+  "dependencies": {
+    "rxjs": "^6.5.5"
+  }
+}
