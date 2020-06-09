@@ -4,7 +4,9 @@
 
       , "sourceMap": true  //Mais doit aussi être mis dans la config. de WebPack.
 
-      //,"experimentalDecorators": true
+      //,"experimentalDecorators": true,
+
+      // , "lib": ["dom","es2018"]
       
     }
   
