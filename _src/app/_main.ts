@@ -9,6 +9,17 @@ export class Main {
         this._oRxJsOperators = new RxJsOperators();
     }
 
+    private _runTests(paTests: Array<ITest>): void {
+        paTests.forEach((poTest: ITest) => {
+            if (poTest.bActif===true && poTest.sTitleAsID!=="") {
+                console.log("\n\n", "**********************   "+`Running test for: '${poTest.sTitleAsID}' :`+"   ************************", "\n");
+
+                poTest.fRun();
+            }
+        });
+        
+    }    
+
     public run(): void {
 
         // Définition des test synchrones.
@@ -35,6 +46,7 @@ export class Main {
                 }
             },
 
+
             {   sTitleAsID: "zip",
                 bActif: true,
                 fRun: (): void => {
@@ -44,25 +56,60 @@ export class Main {
                     });
                 }
             },
+            {   sTitleAsID: "zip (2)",
+                bActif: true,
+                fRun: (): void => {
+                    this._oRxJsOperators.testZip2().subscribe((paData: Array<number>) => {
+                        console.log(` [${paData}]\n\n`);
+                    });
+                }
+            }, 
 
+
+            {   sTitleAsID: "mergeMap",
+                bActif: true,
+                fRun: (): void => {
+                    this._oRxJsOperators.testMergeMap().subscribe((piData: number) => {
+                        console.log(` ${piData}\n\n`);
+                    });                    
+                }
+            }, 
+            {   sTitleAsID: "mergeMap (2)",
+                bActif: true,
+                fRun: (): void => {
+                    this._oRxJsOperators.testMergeMap2().subscribe((piData: number) => {
+                        console.log(` ${piData}\n\n`);
+                    });
+                }
+            },
+            {   sTitleAsID: "mergeMap (3)",
+                bActif: true,
+                fRun: (): void => {
+                    this._oRxJsOperators.testMergeMap3().subscribe((psData: string) => {
+                        console.log(`               ${psData}\n\n`);
+                    });
+                }
+            },
+            
+            
+            {   sTitleAsID: "switchMap",
+                bActif: true,
+                fRun: (): void => {
+                    this._oRxJsOperators.testSwitchMap().subscribe((piData: number) => {
+                        console.log(` ${piData}\n\n`);
+                    });
+                }
+            },            
+            
         ];
-        const sTheOnlyAsynchronousTestToRunID: string = "takeUntil"; 
+        let sTheOnlyAsynchronousTestToRunID: string; 
+        sTheOnlyAsynchronousTestToRunID = "switchMap";  //<<<<<<<<<<<<<<<
+        //sTheOnlyAsynchronousTestToRunID = "mergeMap";  //<<<<<<<<<<<<<<<
         aAsynchronousTests = aAsynchronousTests.filter((poTest: ITest) => poTest.sTitleAsID===sTheOnlyAsynchronousTestToRunID);
  
         //
         this._runTests(aSynchronousTests);
         this._runTests(aAsynchronousTests);
     }        
-
-    private _runTests(paTests: Array<ITest>): void {
-        paTests.forEach((poTest: ITest) => {
-            if (poTest.bActif===true && poTest.sTitleAsID!=="") {
-                console.log("\n\n", "**********************   "+`Running test for: '${poTest.sTitleAsID}' :`+"   ************************", "\n");
-
-                poTest.fRun();
-            }
-        });
-        
-    }
 
 }
