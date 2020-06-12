@@ -276,7 +276,7 @@ export class RxJsOperators {
         const a3Observables: Array< Observable<number> >  = this._get3Observables(1, 3, 5);
 
         const oButton2: HTMLButtonElement = window.document.querySelector("#interact_button2");
-        oButton2.textContent = "Start Observable[0/"+a3Observables.length+"], Emission";
+        oButton2.textContent = "Start Observable[1/"+a3Observables.length+"], Emission";
         oButton2.style.display = "block";
 
         let oResultingObservable: Observable<any>;
