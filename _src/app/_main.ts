@@ -79,17 +79,35 @@ export class Main {
                 fRun: (): void => {
                     this._oRxJsOperators.testMergeMap2().subscribe((piData: number) => {
                         console.log(` ${piData}\n\n`);
-                    });
+                    });                    
                 }
-            },
+            }, 
             {   sTitleAsID: "mergeMap (3)",
                 bActif: true,
                 fRun: (): void => {
-                    this._oRxJsOperators.testMergeMap3().subscribe((psData: string) => {
+                    this._oRxJsOperators.testMergeMap3().subscribe((piData: number) => {
+                        console.log(` ${piData}\n\n`);
+                    });
+                }
+            },
+            {   sTitleAsID: "mergeMap (4)",
+                bActif: true,
+                fRun: (): void => {
+                    this._oRxJsOperators.testMergeMap4().subscribe((psData: string) => {
                         console.log(`               ${psData}\n\n`);
                     });
                 }
             },
+
+
+            {   sTitleAsID: "merge",
+                bActif: true,
+                fRun: (): void => {
+                    this._oRxJsOperators.testMerge().subscribe((piData: number) => {
+                        console.log(` ${piData}\n\n`);
+                    });
+                }
+            },            
             
             
             {   sTitleAsID: "switchMap",
@@ -99,12 +117,42 @@ export class Main {
                         console.log(` ${piData}\n\n`);
                     });
                 }
+            },  
+            {   sTitleAsID: "switchMap (2)",
+                bActif: true,
+                fRun: (): void => {
+                    this._oRxJsOperators.testSwitchMap2().subscribe((piData: number) => {
+                        console.log(` ${piData}\n\n`);
+                    });
+                }
+            },             
+            
+            
+            {   sTitleAsID: "concatMap",
+                bActif: true,
+                fRun: (): void => {
+                    this._oRxJsOperators.testConcatMap().subscribe((piData: number) => {
+                        console.log(` ${piData}\n\n`);
+                    });
+                }
+            },
+            
+            {   sTitleAsID: "concat",
+                bActif: true,
+                fRun: (): void => {
+                    this._oRxJsOperators.testConcat().subscribe((piData: number) => {
+                        console.log(` ${piData}\n\n`);
+                    });
+                }
             },            
             
         ];
         let sTheOnlyAsynchronousTestToRunID: string; 
+        sTheOnlyAsynchronousTestToRunID = "mergeMap";  //<<<<<<<<<<<<<<<
         sTheOnlyAsynchronousTestToRunID = "switchMap";  //<<<<<<<<<<<<<<<
-        //sTheOnlyAsynchronousTestToRunID = "mergeMap";  //<<<<<<<<<<<<<<<
+        sTheOnlyAsynchronousTestToRunID = "concatMap";  //<<<<<<<<<<<<<<<
+        sTheOnlyAsynchronousTestToRunID = "merge";  //<<<<<<<<<<<<<<<
+        sTheOnlyAsynchronousTestToRunID = "concat";  //<<<<<<<<<<<<<<<
         aAsynchronousTests = aAsynchronousTests.filter((poTest: ITest) => poTest.sTitleAsID===sTheOnlyAsynchronousTestToRunID);
  
         //

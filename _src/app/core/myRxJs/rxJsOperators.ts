@@ -1,4 +1,4 @@
-import { Observable, Observer, zip, from, interval, of, fromEvent, range } from 'rxjs';
+import { Observable, Observer, zip, from, interval, of, fromEvent, range, concat, merge } from 'rxjs';
 import { ContinuousDataStream } from './continuousDataStream';
 import { takeUntil, tap, mergeMap, map, concatMap, switchMap, delayWhen } from 'rxjs/operators';
 
@@ -101,7 +101,57 @@ export class RxJsOperators {
         });
 
         return([ oObservable1, oObservable11, oObservable1000 ]);
+    }
+
+    private _get3Observables_2(
+        piNbSecondsBetweenEmittedData_ByObservable1: number =1,
+        piNbSecondsBetweenEmittedData_ByObservable2: number =4,
+        piNbSecondsBetweenEmittedData_ByObservable3: number =8
+    ): Array< Observable<any> > {
+
+        const a3Observables: Array< Observable<any> >  = [
+            zip( from([1,2,3,4,5,6,7,8]), interval(piNbSecondsBetweenEmittedData_ByObservable1*1000) )
+            .pipe(
+                map(([data, counter]) => {
+                    return(data);
+                })
+            ),
+
+            zip( from([11,22,33,44,55,66,77]), interval(piNbSecondsBetweenEmittedData_ByObservable2*1000) )
+            .pipe(
+                map(([data, counter]) => {
+                    return(data);
+                })
+            ),            
+
+            zip( from([1000,2000,3000,4000,5000]), interval(piNbSecondsBetweenEmittedData_ByObservable3*1000) )
+            .pipe(
+                map(([data, counter]) => {
+                    return(data);
+                })
+            )            
+        ];    
+        
+        return(a3Observables);
     }    
+
+    // =================================================================================================
+
+    private _getStartNextObservableButton(): HTMLButtonElement {
+        const oStartNextObservableButton: HTMLButtonElement = window.document.querySelector("#interact_button2");
+        oStartNextObservableButton.style.display = "block";
+        return(oStartNextObservableButton);
+    }
+
+    private _updateStartNextObservableButtonState(piNextObservableIndex: number, piObservablesArrayLength: number): void {
+        const oStartNextObservableButton: HTMLButtonElement = this._getStartNextObservableButton();
+        // console.log(piNextObservableIndex, "!!!");
+        if (piNextObservableIndex+1 > piObservablesArrayLength) {
+            oStartNextObservableButton.style.display = "none";
+        } else {
+            oStartNextObservableButton.textContent = `Start Observable[${piNextObservableIndex+1}/${piObservablesArrayLength}], Emission`;
+        }
+    }     
 
 
     // =============================================================================================
@@ -207,7 +257,7 @@ export class RxJsOperators {
     //             Pour annuler cet effet, utiliser switchMap à la place de mergeMap,
     //             car seul le présent Observable retourné par switchMap, est celui qui fait foi,
     //             (les autres sont ckôturés).
-    testMergeMap3(): Observable<any> {
+    testMergeMap4(): Observable<any> {
         const iEmitIDEach: number = 10; // secondes
         const oObservableOfIDsEmission: Observable<number> = this._testZipMapped<number>(1/iEmitIDEach, [
             500, 600, 700
@@ -255,7 +305,7 @@ export class RxJsOperators {
 
     // Le flux résultant va accueillir toutes les émissions des divers observables 
     // que renvverra mergeMap.
-    testMergeMap2(): Observable<number> {
+    testMergeMap3(): Observable<number> {
         const a3Observables: Array< Observable<number> >  = this._get3Observables();
 
         let oResultingObservable: Observable<any>;
@@ -272,7 +322,7 @@ export class RxJsOperators {
 
     // Le flux résultant va accueillir toutes les émissions des divers observables 
     // qu'a renvoyé mergeMap. Ici, à chaque clique, on ajoute le flux d'un autre Observable, au flux.
-    testMergeMap(): Observable<number> {
+    testMergeMap2(): Observable<number> {
         const a3Observables: Array< Observable<number> >  = this._get3Observables(1, 3, 5);
 
         const oButton2: HTMLButtonElement = window.document.querySelector("#interact_button2");
@@ -283,6 +333,11 @@ export class RxJsOperators {
         let iObservableIndex = 0;
         oResultingObservable = fromEvent(oButton2, 'click')
             .pipe(
+                tap(() => {
+                    if (iObservableIndex>0) {
+                        console.log(`  !! ASK for ADDING Observable ${iObservableIndex+1} stream to the "full stream" !! OK !!`);
+                    }
+                }),                
                 mergeMap( (mouseEvent: MouseEvent) => {
                     const oReturnedObservable: Observable<number> = a3Observables[iObservableIndex++];
                     if (iObservableIndex===a3Observables.length) {
@@ -291,11 +346,45 @@ export class RxJsOperators {
                     } else {
                         oButton2.textContent = `Start Observable[${iObservableIndex}/${a3Observables.length}], Emission`;
                     }
+                    console.log(`\n\n`);
+                    console.log(` Observable ${iObservableIndex} stream added...`);
                     return(oReturnedObservable);
                 })
             );
         
         return(oResultingObservable);
+    }    
+
+    // Le flux résultant va accueillir toutes les émissions des divers observables 
+    // qu'a renvoyé mergeMap. Ici, à chaque clique, on ajoute le flux d'un autre Observable, au flux.
+    testMergeMap(): Observable<number> {
+        const a3Observables: Array< Observable<any> >  = this._get3Observables_2(1, 1.5, 1.5);
+
+        let iAskedForObservableIndex = 0;
+        this._updateStartNextObservableButtonState(iAskedForObservableIndex, a3Observables.length);
+
+        let oResultingObservable: Observable<any>;
+        let iCurrentStreamingObservableIndex = 0;
+        
+        oResultingObservable = fromEvent(this._getStartNextObservableButton(), 'click')
+            .pipe(
+                tap(() => {
+                    if (iAskedForObservableIndex>0) {
+                        console.log(`  Add to stream : Observable ${iAskedForObservableIndex+1} stream !!`);
+                    }
+                    
+                    iAskedForObservableIndex++;
+                    this._updateStartNextObservableButtonState(iAskedForObservableIndex, a3Observables.length);
+                   
+                }),
+                mergeMap( (mouseEvent: MouseEvent) => {
+                    iCurrentStreamingObservableIndex++;
+                    const oReturnedObservable: Observable<number> = a3Observables[iCurrentStreamingObservableIndex-1];
+                    return(oReturnedObservable);
+                })
+            );
+        
+        return(oResultingObservable);        
     }    
 
 
@@ -304,7 +393,7 @@ export class RxJsOperators {
 
     // Avec switchMap, le flux résultant sera UNIQUEMENT celui du dernier Observable retourné par switchMap !
     // Contrairement à mergeMap, qui fait cohabiter les émissions de tous les Observables qu'elle a renvoyés.
-    testSwitchMap(): Observable<number> {
+    testSwitchMap2(): Observable<number> {
         const a3Observables: Array< Observable<number> >  = this._get3Observables(1, 2, 4);
 
         const oButton2: HTMLButtonElement = window.document.querySelector("#interact_button2");
@@ -315,20 +404,134 @@ export class RxJsOperators {
         let iObservableIndex = 0;
         oResultingObservable = fromEvent(oButton2, 'click')
             .pipe(
+                tap(() => {
+                    if (iObservableIndex>0) {
+                        console.log(`  !! ASK for SWITCHING To Observable ${iObservableIndex+1} stream !! OK !!`);
+                    }
+                }),           
                 switchMap( (mouseEvent: MouseEvent) => {
                     console.log("\n\n");
-                    const oReturnedObservable: Observable<number> = a3Observables[iObservableIndex++];
-                    if (iObservableIndex===a3Observables.length) {
-                        // iObservableIndex=0;
-                        oButton2.style.display = "none";
-                    } else {
-                        oButton2.textContent = `Start Observable[${iObservableIndex+1}/${a3Observables.length}], Emission`;
+                    if (a3Observables[iObservableIndex]!==undefined) {
+                        const oReturnedObservable: Observable<number> = a3Observables[iObservableIndex++];
+                        if (iObservableIndex===a3Observables.length) {
+                            // iObservableIndex=0;
+                            oButton2.style.display = "none";
+                        } else {
+                            oButton2.textContent = `Start Observable[${iObservableIndex+1}/${a3Observables.length}], Emission`;
+                        }
+                        console.log(`\n\n`);
+                        console.log(` SWITCHED To Observable ${iObservableIndex} stream :`);
+                        return(oReturnedObservable);
                     }
+                })
+            );
+        
+        return(oResultingObservable);
+    }
+
+    // Avec switchMap, le flux résultant sera UNIQUEMENT celui du dernier Observable retourné par switchMap !
+    // Contrairement à mergeMap, qui fait cohabiter les émissions de tous les Observables qu'elle a renvoyés.
+    testSwitchMap(): Observable<number> {
+        const a3Observables: Array< Observable<any> >  = this._get3Observables_2(1, 1.5, 1.5);
+
+        let iAskedForObservableIndex = 0;
+        this._updateStartNextObservableButtonState(iAskedForObservableIndex, a3Observables.length);
+
+        let oResultingObservable: Observable<any>;
+        let iCurrentStreamingObservableIndex = 0;
+        
+        oResultingObservable = fromEvent(this._getStartNextObservableButton(), 'click')
+            .pipe(
+                tap(() => {
+                    if (iAskedForObservableIndex>0) {
+                        console.log(`  Close Observable ${iAskedForObservableIndex} in order to switch to : Observable ${iAskedForObservableIndex+1} stream !!`);
+                    }
+                    
+                    iAskedForObservableIndex++;
+                    this._updateStartNextObservableButtonState(iAskedForObservableIndex, a3Observables.length);
+                   
+                }),
+                switchMap( (mouseEvent: MouseEvent) => {
+                    iCurrentStreamingObservableIndex++;
+                    console.log("\n\n", `Observable ${iCurrentStreamingObservableIndex} stream:`);                    
+                    const oReturnedObservable: Observable<number> = a3Observables[iCurrentStreamingObservableIndex-1];
+                    return(oReturnedObservable);
+                })
+            );
+        
+        return(oResultingObservable);        
+    }
+
+
+    
+    
+   // ============================== concatMap ===============================================================    
+
+    // Lorsque concatMap renvoie un Observable, cet Observable ne verra son flux devenir le flux UNIQUE et courant 
+    // QUE lorsque le précédent Observable qu'avait renvoyé concatMap, sera devenu completed, c-à-d ayant clôturé 
+    // son émission.
+    // Ce genre d'approche, permet de séquencer dans un ORDRE donné, le lancement de flux Observables (asynchrones).
+    testConcatMap(): Observable<number> {
+        const a3Observables: Array< Observable<any> >  = this._get3Observables_2(1, 1.5, 1.5);
+
+        let iAskedForObservableIndex = 0;
+        this._updateStartNextObservableButtonState(iAskedForObservableIndex, a3Observables.length);
+
+        let oResultingObservable: Observable<any>;
+        let iCurrentStreamingObservableIndex = 0;
+        
+        oResultingObservable = fromEvent(this._getStartNextObservableButton(), 'click')
+            .pipe(
+                tap(() => {
+                    if (iAskedForObservableIndex>0) {
+                        console.log(`  !! if not completed yet, WILL WAIT for Observable ${iAskedForObservableIndex} stream to be COMPLETED Before starting with Observable ${iAskedForObservableIndex+1} stream !!`);
+                    }
+                    
+                    iAskedForObservableIndex++;
+                    this._updateStartNextObservableButtonState(iAskedForObservableIndex, a3Observables.length);
+                   
+                }),
+                concatMap( (mouseEvent: MouseEvent) => {
+                    iCurrentStreamingObservableIndex++;
+                    console.log("\n\n", `Observable ${iCurrentStreamingObservableIndex} stream:`);                    
+                    const oReturnedObservable: Observable<number> = a3Observables[iCurrentStreamingObservableIndex-1];
                     return(oReturnedObservable);
                 })
             );
         
         return(oResultingObservable);
+    }      
+
+
+
+
+    // ============================== concat ===============================================================
+
+    // Les Observables passés en paramètre à concat(...), seront (dans l'ordre passé),
+    // "subscribés" chacun leur tour, (pour donc 1 seul subscribe effectué sur l'observable résultant). 
+    // Bien entendu, concernant ces Observables passés en param., le subscribe sur l'Observable suivant ne sera
+    // effectué QUE lorsque l'Observable précédent sera à l'état completed !
+    testConcat(): Observable<number> {
+        let a3Observables: Array< Observable<any> >  = this._get3Observables_2(1, 1.5, 1.5);
+
+        let oResultingObservable: Observable<any>;
+        oResultingObservable = concat(...a3Observables);
+
+        return(oResultingObservable);        
+    }
+
+
+    // ============================== concat ===============================================================
+
+    // Les Observables passés en paramètre à merge(...), seront simultanément tous "subscribés", 
+    // et donc le flux résultant dans le temps, sera un mélange de leur émission.
+    testMerge(): Observable<number> {
+        let a3Observables: Array< Observable<any> >  = this._get3Observables_2(1, 1.5, 1.5);
+
+        let oResultingObservable: Observable<any>;
+        oResultingObservable = merge(...a3Observables);
+
+        return(oResultingObservable);        
     }    
     
 
