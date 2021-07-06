@@ -1,3 +1,6 @@
+import { zip, Observable, from, interval } from "rxjs";
+import { map } from "rxjs/operators";
+
 import { RxJsOperators } from "./core/myRxJs/rxJsOperators";
 import { ITest } from "./core/types";
 
@@ -21,6 +24,32 @@ export class Main {
     }    
 
     public run(): void {
+        //this.runTestSomeOperators();
+        this.runTestRapide();
+
+    }
+
+    private runTestRapide() {
+        const elems: Array<string> = ["Bonjour", "Monsieur", "A demain !"];
+        
+        type TupleLibelleTime = [string, number];
+
+        const observable: Observable<string> = zip<TupleLibelleTime>( 
+            from(elems),
+            interval(1500)
+        ).pipe(
+            map((libelleAndTime: TupleLibelleTime) => {
+                return(libelleAndTime[0]);
+            })
+
+        );
+
+        observable.subscribe((fullText: string) => {
+            console.log(fullText);
+        });
+    }
+
+    private runTestSomeOperators() {
 
         // Définition des test synchrones.
         const aSynchronousTests: Array<ITest> = [
