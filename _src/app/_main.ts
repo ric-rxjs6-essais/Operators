@@ -1,5 +1,5 @@
 import { zip, Observable, from, interval } from "rxjs";
-import { map } from "rxjs/operators";
+import { map, take } from "rxjs/operators";
 
 import { RxJsOperators } from "./core/myRxJs/rxJsOperators";
 import { ITest } from "./core/types";
@@ -25,9 +25,27 @@ export class Main {
 
     public run(): void {
         //this.runTestSomeOperators();
-        this.runTestRapide();
+        //this.runTestRapideZip();
+        this.runTestRapideSubstitutAZip();
 
     }
+
+
+    private runTestRapideSubstitutAZip() {
+        const elems: Array<string> = ["Bonjour", "Monsieur", "A demain !"];
+        
+        const observable: Observable<string> = interval(1000).pipe(
+            take(2),
+            map((numeroFois: number) => {
+                return(elems[numeroFois]);
+            })               
+            
+        );
+        
+        observable.subscribe((fullText: string) => {
+            console.log(fullText);
+        });
+    }    
 
     private runTestRapide() {
         const elems: Array<string> = ["Bonjour", "Monsieur", "A demain !"];
