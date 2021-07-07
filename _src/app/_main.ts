@@ -195,11 +195,12 @@ export class Main {
             
         ];
         let sTheOnlyAsynchronousTestToRunID: string; 
-        sTheOnlyAsynchronousTestToRunID = "mergeMap";  //<<<<<<<<<<<<<<<
         sTheOnlyAsynchronousTestToRunID = "switchMap";  //<<<<<<<<<<<<<<<
         sTheOnlyAsynchronousTestToRunID = "concatMap";  //<<<<<<<<<<<<<<<
         sTheOnlyAsynchronousTestToRunID = "merge";  //<<<<<<<<<<<<<<<
         sTheOnlyAsynchronousTestToRunID = "concat";  //<<<<<<<<<<<<<<<
+        sTheOnlyAsynchronousTestToRunID = "mergeMap (2)";  //<<<<<<<<<<<<<<<
+        sTheOnlyAsynchronousTestToRunID = "zip (2)";  //<<<<<<<<<<<<<<<
         aAsynchronousTests = aAsynchronousTests.filter((poTest: ITest) => poTest.sTitleAsID===sTheOnlyAsynchronousTestToRunID);
  
         //

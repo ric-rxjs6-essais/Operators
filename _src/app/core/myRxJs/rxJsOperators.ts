@@ -215,13 +215,13 @@ export class RxJsOperators {
 
     // En fait zip(observable1, observable2, ..., observableX), 
     //   à la nième émission des observables qui lui sont passés en param.,
-    // émet un tableau contenant dans l'ordre 
+    // émet un TABLEAU contenant dans l'ordre 
     //  [ nième élém. émis par l'observable1,
     //    nième élém. émis par l'observable2,
     //    ...
     //    nième élém. émis par l'observableX
     //  ]
-    // Ce qui sous-entend qu'avant d'émettre dans le flux ce tableau, tous les observables doivent avoir leur
+    // Ce qui sous-entend qu'avant d'émettre dans le flux ce TABLEAU, tous les observables doivent avoir leur
     // nième élém. à émettre, disponible, c-à-d, qu'on attendra les retardataires,
     // et donc si l'un des observables a fini d'émettre (car pas de nième élément à émettre), 
     // alors plus rien du tout n'est émis !! Autrement dit, on émet le fruit de TOUS, ou on émet rien !
@@ -252,11 +252,11 @@ export class RxJsOperators {
     // Contrairement à map qui convertit un item avant de le placer dans le flux,
     // mergeMap, insère dans le flux, à la place du dit item, le flux de l'obervable
     // retourné par mergeMap. 
-    //  ATTENTION: chaque Observable précédemment retourné le dit mergeMap, 
+    //  ATTENTION: chaque Observable précédemment retourné par le dit mergeMap, 
     //             continuera son cycle d'émission, parallélement à celui en cours de renvoi par mergeMap. 
     //             Pour annuler cet effet, utiliser switchMap à la place de mergeMap,
     //             car seul le présent Observable retourné par switchMap, est celui qui fait foi,
-    //             (les autres sont ckôturés).
+    //             (les autres sont clôturés).
     testMergeMap4(): Observable<any> {
         const iEmitIDEach: number = 10; // secondes
         const oObservableOfIDsEmission: Observable<number> = this._testZipMapped<number>(1/iEmitIDEach, [
@@ -521,7 +521,7 @@ export class RxJsOperators {
     }
 
 
-    // ============================== concat ===============================================================
+    // ============================== merge ===============================================================
 
     // Les Observables passés en paramètre à merge(...), seront simultanément tous "subscribés", 
     // et donc le flux résultant dans le temps, sera un mélange de leur émission.
